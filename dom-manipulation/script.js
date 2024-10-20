@@ -19,7 +19,7 @@ let quotes = [
   },
 ];
 
-function showRandomQuote() {
+function displayRandomQuote() {
   const randomIndex = Math.floor(Math.random() * quotes.length);
   const randomQuote = quotes[randomIndex];
 
@@ -40,10 +40,10 @@ function addQuote() {
   newQuoteText.value = "";
   newQuoteCategory.value = "";
   addQuoteForm.style.display = "none";
-  showRandomQuote();
+  displayRandomQuote();
 }
 
-newQuoteButton.addEventListener("click", showRandomQuote);
+newQuoteButton.addEventListener("click", displayRandomQuote);
 addQuoteForm.addEventListener("submit", (event) => {
   event.preventDefault();
   addQuote();
