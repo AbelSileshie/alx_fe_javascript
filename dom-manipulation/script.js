@@ -193,11 +193,10 @@ async function syncData() {
       );
 
       if (conflicts.length > 0) {
-        conflictNotification.textContent =
-          "Conflicts detected. Server data takes precedence.";
+        alert("Conflicts detected. Server data takes precedence.");
         conflictNotification.style.display = "block";
       } else {
-        conflictNotification.style.display = "none";
+        alert("Quotes synced with server!");
       }
 
       quotes = mergedQuotes;
