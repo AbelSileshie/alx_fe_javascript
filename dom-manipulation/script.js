@@ -19,7 +19,8 @@ function showRandomQuote() {
   const randomIndex = Math.floor(Math.random() * quotes.length);
   const randomQuote = quotes[randomIndex];
 
-  quoteDisplay.innerHTML = randomQuote.text; 
+  quoteDisplay.innerHTML = randomQuote.text;
+}
 
 function createAddQuoteForm() {
   addQuoteForm.style.display = "block";
@@ -32,10 +33,15 @@ function addQuote() {
   };
 
   quotes.push(newQuote);
+
+  const newQuoteElement = document.createElement("p");
+  newQuoteElement.textContent = newQuote.text;
+
+  quoteDisplay.appendChild(newQuoteElement);
+
   newQuoteText.value = "";
   newQuoteCategory.value = "";
   addQuoteForm.style.display = "none";
-  showRandomQuote();
 }
 
 newQuoteButton.addEventListener("click", showRandomQuote);
