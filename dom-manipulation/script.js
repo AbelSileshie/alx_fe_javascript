@@ -8,7 +8,7 @@ const conflictNotification = document.getElementById("conflictNotification");
 
 let quotes = [];
 let lastSyncTime = 0;
-const syncInterval = 30000;
+const setInterval = 30000;
 
 function showRandomQuote(category) {
   let filteredQuotes = quotes;
@@ -87,7 +87,7 @@ async function syncData() {
 
   let quotes = [];
   let lastSyncTime = 0;
-  const syncInterval = 30000;
+  const setInterval = 30000;
 
   function showRandomQuote(category) {
     let filteredQuotes = quotes;
@@ -208,7 +208,7 @@ async function syncData() {
     }
 
     lastSyncTime = Date.now();
-    setTimeout(syncData, syncInterval);
+    setTimeout(syncData, setInterval);
   }
 }
 
