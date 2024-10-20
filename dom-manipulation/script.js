@@ -13,18 +13,13 @@ let quotes = [
     text: "Life is what happens to you while you're busy making other plans.",
     category: "Inspirational",
   },
-  {
-    text: "Life is what happens to you while you're busy making other plans.",
-    category: "Funny",
-  },
 ];
 
-function displayRandomQuote() {
+function showRandomQuote() {
   const randomIndex = Math.floor(Math.random() * quotes.length);
   const randomQuote = quotes[randomIndex];
 
-  quoteDisplay.textContent = randomQuote.text;
-}
+  quoteDisplay.innerHTML = randomQuote.text; 
 
 function createAddQuoteForm() {
   addQuoteForm.style.display = "block";
@@ -40,10 +35,10 @@ function addQuote() {
   newQuoteText.value = "";
   newQuoteCategory.value = "";
   addQuoteForm.style.display = "none";
-  displayRandomQuote();
+  showRandomQuote();
 }
 
-newQuoteButton.addEventListener("click", displayRandomQuote);
+newQuoteButton.addEventListener("click", showRandomQuote);
 addQuoteForm.addEventListener("submit", (event) => {
   event.preventDefault();
   addQuote();
