@@ -4,22 +4,11 @@ const addQuoteForm = document.getElementById("addQuoteForm");
 const newQuoteText = document.getElementById("newQuoteText");
 const newQuoteCategory = document.getElementById("newQuoteCategory");
 const categoryFilter = document.getElementById("categoryFilter");
+const conflictNotification = document.getElementById("conflictNotification");
 
-let quotes = [
-  {
-    text: "The only way to do great work is to love what you do.",
-    category: "Motivation",
-  },
-  {
-    text: "Life is what happens to you while you're busy making other plans.",
-    category: "Inspirational",
-  },
-  // Add more quotes here
-];
-
-let lastSelectedCategory =
-  localStorage.getItem("lastSelectedCategory") || "all";
-
+let quotes = [];
+let lastSyncTime = 0;
+const syncInterval = 30000;
 function showRandomQuote(category) {
   let filteredQuotes = quotes;
   if (category !== "all") {
@@ -60,6 +49,8 @@ function addQuote() {
   newQuoteCategory.value = "";
   addQuoteForm.style.display = "none";
   showRandomQuote(lastSelectedCategory);
+
+  syncData();
 }
 
 function filterQuotes() {
@@ -84,6 +75,52 @@ function populateCategories() {
   categoryFilter.value = lastSelectedCategory;
 }
 
+function syncData() {
+  fetch("https://jsonplaceholder.typicode.com/posts")
+    .then((response) => response.json())
+    .then((serverQuotes) => {
+      const mergedQuotes = serverQuotes
+        .map((serverQuote) => ({
+          text: serverQuote.title,
+          category: serverQuote.body,
+        }))
+        .concat(
+          quotes.filter(
+            (localQuote) =>
+              !serverQuotes.some(
+                (serverQuote) => serverQuote.text === localQuote.text
+              )
+          )
+        );
+
+      const conflicts = mergedQuotes.filter((quote) =>
+        quotes.some(
+          (localQuote) =>
+            localQuote.text === quote.text &&
+            localQuote.category !== quote.category
+        )
+      );
+
+      if (conflicts.length > 0) {
+        conflictNotification.textContent =
+          "Conflicts detected. Server data takes precedence.";
+        conflictNotification.style.display = "block";
+      } else {
+        conflictNotification.style.display = "none";
+      }
+
+      quotes = mergedQuotes;
+      localStorage.setItem("quotes", JSON.stringify(quotes));
+      showRandomQuote(lastSelectedCategory);
+    })
+    .catch((error) => {
+      console.error("Error fetching quotes:", error);
+    });
+
+  lastSyncTime = Date.now();
+  setTimeout(syncData, syncInterval);
+}
+
 newQuoteButton.addEventListener("click", () =>
   showRandomQuote(lastSelectedCategory)
 );
@@ -94,3 +131,5 @@ addQuoteForm.addEventListener("submit", (event) => {
 categoryFilter.addEventListener("change", filterQuotes);
 
 populateCategories();
+
+syncData();
