@@ -168,6 +168,7 @@ async function syncData() {
         }
       );
       const serverQuotes = await response.json();
+      const quotes = await syncQuotes();
 
       const mergedQuotes = serverQuotes
         .map((serverQuote) => ({
