@@ -156,68 +156,13 @@ async function syncData() {
   }
 
   async function syncData() {
-    fetchQuotesFromServer();
-    try {
-      const response = await fetch(
-        "https://jsonplaceholder.typicode.com/posts"
-      );
-      const serverQuotes = await response.json();
-
-      const mergedQuotes = serverQuotes
-        .map((serverQuote) => ({
-          text: serverQuote.title,
-          category: serverQuote.body,
-        }))
-        .concat(
-          quotes.filter(
-            (localQuote) =>
-              !serverQuotes.some(
-                (serverQuote) => serverQuote.text === localQuote.text
-              )
-          )
-        );
-
-      const conflicts = mergedQuotes.filter((quote) =>
-        quotes.some(
-          (localQuote) =>
-            localQuote.text === quote.text &&
-            localQuote.category !== quote.category
-        )
-      );
-
-      if (conflicts.length > 0) {
-        conflictNotification.textContent =
-          "Conflicts detected. Server data takes precedence.";
-        conflictNotification.style.display = "block";
-      } else {
-        conflictNotification.style.display = "none";
-      }
-
-      quotes = mergedQuotes;
-      localStorage.setItem("quotes", JSON.stringify(quotes));
-      showRandomQuote(lastSelectedCategory);
-    } catch (error) {
-      console.error("Error fetching quotes:", error);
-    }
-
-    lastSyncTime = Date.now();
-    setTimeout(syncData, syncInterval);
-  }
-
-  newQuoteButton.addEventListener("click", () =>
-    showRandomQuote(lastSelectedCategory)
-  );
-  addQuoteForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-    addQuote();
-  });
-  categoryFilter.addEventListener("change", filterQuotes);
-
-  populateCategories();
-
-  syncData();
   try {
-    const response = await fetch("https://jsonplaceholder.typicode.com/posts");
+    const response = await fetch("https://jsonplaceholder.typicode.com/posts", {
+      method: "GET", // Explicitly specify GET method
+      headers: {
+        "Content-Type": "application/json", // Not strictly necessary for GET
+      },
+    });
     const serverQuotes = await response.json();
 
     const mergedQuotes = serverQuotes
@@ -260,6 +205,7 @@ async function syncData() {
   lastSyncTime = Date.now();
   setTimeout(syncData, syncInterval);
 }
+
 
 newQuoteButton.addEventListener("click", () =>
   showRandomQuote(lastSelectedCategory)
