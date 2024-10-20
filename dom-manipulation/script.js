@@ -9,6 +9,7 @@ const conflictNotification = document.getElementById("conflictNotification");
 let quotes = [];
 let lastSyncTime = 0;
 const syncInterval = 30000;
+
 function showRandomQuote(category) {
   let filteredQuotes = quotes;
   if (category !== "all") {
@@ -75,48 +76,47 @@ function populateCategories() {
   categoryFilter.value = lastSelectedCategory;
 }
 
-function syncData() {
-  fetchQuotesFromServer();
-try {
+async function syncData() {
+  try {
     const response = await fetch("https://jsonplaceholder.typicode.com/posts");
     const serverQuotes = await response.json();
 
     const mergedQuotes = serverQuotes
-        .map((serverQuote) => ({
-            text: serverQuote.title,
-            category: serverQuote.body,
-        }))
-        .concat(
-            quotes.filter(
-                (localQuote) =>
-                    !serverQuotes.some(
-                        (serverQuote) => serverQuote.text === localQuote.text
-                    )
+      .map((serverQuote) => ({
+        text: serverQuote.title,
+        category: serverQuote.body,
+      }))
+      .concat(
+        quotes.filter(
+          (localQuote) =>
+            !serverQuotes.some(
+              (serverQuote) => serverQuote.text === localQuote.text
             )
-        );
+        )
+      );
 
     const conflicts = mergedQuotes.filter((quote) =>
-        quotes.some(
-            (localQuote) =>
-                localQuote.text === quote.text &&
-                localQuote.category !== quote.category
-        )
+      quotes.some(
+        (localQuote) =>
+          localQuote.text === quote.text &&
+          localQuote.category !== quote.category
+      )
     );
 
     if (conflicts.length > 0) {
-        conflictNotification.textContent =
-            "Conflicts detected. Server data takes precedence.";
-        conflictNotification.style.display = "block";
+      conflictNotification.textContent =
+        "Conflicts detected. Server data takes precedence.";
+      conflictNotification.style.display = "block";
     } else {
-        conflictNotification.style.display = "none";
+      conflictNotification.style.display = "none";
     }
 
     quotes = mergedQuotes;
     localStorage.setItem("quotes", JSON.stringify(quotes));
     showRandomQuote(lastSelectedCategory);
-} catch (error) {
+  } catch (error) {
     console.error("Error fetching quotes:", error);
-}
+  }
 
   lastSyncTime = Date.now();
   setTimeout(syncData, syncInterval);
